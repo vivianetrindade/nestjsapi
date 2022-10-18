@@ -1,11 +1,10 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { User, Bookmark } from '@prisma/client';
-import { PrismamService } from 'src/prismam/prismam.service';
+import { PrismamService } from '../prismam/prismam.service';
 import { AuthDto } from './dto';
 import * as argon from 'argon2';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { JwtService } from '@nestjs/jwt';
-import { NumberDataTypeConstructor } from 'sequelize/types';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
