@@ -2,9 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
+import { PrismamService } from '../src/prismam/prismam.service';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
+  let prisma: PrismamService;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -18,6 +20,9 @@ describe('AppController (e2e)', () => {
       }),
     );
     await app.init();
+
+    prisma = app.get(PrismamService);
+    await prisma.cleanDb();
   });
 
   afterEach(() => {
