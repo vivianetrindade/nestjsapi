@@ -5,6 +5,7 @@ import { AppModule } from './../src/app.module';
 import { PrismamService } from '../src/prismam/prismam.service';
 import { AuthDto } from 'src/auth/dto';
 import { EditUserDto } from 'src/user/dto';
+import { CreateBookmarkDto, EditBookmarkDto } from 'src/bookmark/dto';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -66,7 +67,6 @@ describe('AppController (e2e)', () => {
       });
     });
 
-    
     describe('Signin', () => {
       const dto: AuthDto = {
         email: 'trindade.viviane@gmail.com',
@@ -132,32 +132,109 @@ describe('AppController (e2e)', () => {
   });
 
   describe('bookmark', () => {
+    let id: number;
     describe('Get empty Bookmarks', () => {
-      it('shoul get empty bookmark', () => {
-        return request(app.getHttpServer())
+      it('should get empty bookmark', async () => {
+        const response = await request(app.getHttpServer())
           .get('/bookmarks')
           .set('Authorization', `Bearer ${jwtToken}`)
           .expect(200);
+
+        expect(response.body).toHaveLength(0);
       });
     });
 
-    describe('Create Bookmark', () => {});
+    describe('Create Bookmark', () => {
+      const dto: CreateBookmarkDto = {
+        title: 'nestjs tutorial',
+        link: 'https://www.youtube.com/watch?v=GHTA143_b-s',
+      };
+      it('should create a bookmark', async () => {
+        const response = await request(app.getHttpServer())
+          .post('/bookmarks/create')
+          .set('Authorization', `Bearer ${jwtToken}`)
+          .send(dto)
+          .expect(201);
+        id = response.body.id;
+        expect(response.body.title).toBe(dto.title);
+      });
 
+      it('should trow an error if link is empty', () => {
+        return request(app.getHttpServer())
+          .post('/bookmarks/create')
+          .set('Authorization', `Bearer ${jwtToken}`)
+          .send({
+            title: dto.title,
+          })
+          .expect(400);
+      });
 
-    describe('Get one bookmark', () => {});
+      it('shoul trow an error if title is empty', () => {
+        return request(app.getHttpServer())
+          .post('/bookmarks/create')
+          .set('Authorization', `Bearer ${jwtToken}`)
+          .send({
+            link: dto.link,
+          })
+          .expect(400);
+      });
+    });
 
-    describe('Edit bookmark', () => {});
+    describe('Get Bookmarks', () => {
+      it('should get  bookmarks', async () => {
+        const response = await request(app.getHttpServer())
+          .get('/bookmarks')
+          .set('Authorization', `Bearer ${jwtToken}`)
+          .expect(200);
 
-    describe('Delete Bookmark', () => {});
+        expect(response.body).toHaveLength(1);
+      });
+    });
+    describe('Get bookmark by id', () => {
+      it('should get one bookmark', async () => {
+        const response = await request(app.getHttpServer())
+          .get(`/bookmarks/${id}`)
+          .set('Authorization', `Bearer ${jwtToken}`)
+          .expect(200);
+        expect(response.body.id).toBe(id);
+      });
+    });
+
+    describe('Edit bookmark', () => {
+      const dto: EditBookmarkDto = {
+        description: 'Tutorial about nest JS framework',
+      };
+      it('should edit bookmark', async () => {
+        const response = await request(app.getHttpServer())
+          .patch(`/bookmarks/${id}`)
+          .set('Authorization', `Bearer ${jwtToken}`)
+          .send(dto)
+          .expect(200);
+        console.log({ response: response.body });
+        expect(response.body.description).toBe(dto.description);
+      });
+    });
+
+    describe('Delete Bookmark', () => {
+      it('should delete bookmark', async () => {
+        const response = await request(app.getHttpServer())
+          .delete(`/bookmarks/${id}`)
+          .set('Authorization', `Bearer ${jwtToken}`)
+          .expect(204);
+        console.log({ response: response.body });
+        // expect(response.body.description).toBe(dto.description);
+      });
+      it('should not be in database anymore', async () => {
+        const response = await request(app.getHttpServer())
+          .get(`/bookmarks/${id}`)
+          .set('Authorization', `Bearer ${jwtToken}`)
+          .expect(200);
+        expect(response.body).toStrictEqual({});
+      });
+    });
   });
 
   afterAll(() => {
     app.close();
   });
-  // it('/ (GET)', () => {
-  //   return request(app.getHttpServer())
-  //     .get('/')
-  //     .expect(200)
-  //     .expect('Hello World!');
-  // });
 });
