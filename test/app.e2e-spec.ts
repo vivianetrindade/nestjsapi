@@ -3,12 +3,13 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
 import { PrismamService } from '../src/prismam/prismam.service';
+import { AuthDto } from 'src/auth/dto';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
   let prisma: PrismamService;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -25,11 +26,114 @@ describe('AppController (e2e)', () => {
     await prisma.cleanDb();
   });
 
-  afterEach(() => {
-    app.close();
+  let jwtToken: string;
+  describe('Auth', () => {
+    const dto: AuthDto = {
+      email: 'trindade.viviane@gmail.com',
+      password: '123',
+    };
+    describe('Signup', () => {
+      it('should trown an error if email empty', () => {
+        return request(app.getHttpServer())
+          .post('/auth/signup')
+          .send({
+            email: '',
+            password: dto.password,
+          })
+          .expect(400);
+      });
+
+      it('should trown an error if password empty', () => {
+        return request(app.getHttpServer())
+          .post('/auth/signup')
+          .send({
+            email: dto.email,
+            password: '',
+          })
+          .expect(400);
+      });
+
+      it('should trown an error if password empty', () => {
+        return request(app.getHttpServer()).post('/auth/signup').expect(400);
+      });
+
+      it('should signup', () => {
+        return request(app.getHttpServer())
+          .post('/auth/signup')
+          .send(dto)
+          .expect(201);
+      });
+    });
+
+    
+    describe('Signin', () => {
+      const dto: AuthDto = {
+        email: 'trindade.viviane@gmail.com',
+        password: '123',
+      };
+      it('should trown an error if email empty', () => {
+        return request(app.getHttpServer())
+          .post('/auth/signin')
+          .send({
+            email: '',
+            password: dto.password,
+          })
+          .expect(400);
+      });
+
+      it('should trown an error if password empty', () => {
+        return request(app.getHttpServer())
+          .post('/auth/signin')
+          .send({
+            email: dto.email,
+            password: '',
+          })
+          .expect(400);
+      });
+
+      it('should trown an error if password empty', () => {
+        return request(app.getHttpServer()).post('/auth/signin').expect(400);
+      });
+
+      it('should signin', async () => {
+        const response = await request(app.getHttpServer())
+          .post('/auth/signin')
+          .send(dto)
+          .expect(200);
+        jwtToken = response.body.access_token;
+        // console.log(jwtToken);
+      });
+    });
   });
 
-  it.todo('shoul, pass');
+  describe('User', () => {
+    describe('Get me', () => {
+      it('should get current user', () => {
+        return request(app.getHttpServer())
+          .get('/users/me')
+          .set('Authorization', `Bearer ${jwtToken}`)
+          .expect(200);
+      });
+    });
+
+    describe('Edit user', () => {});
+  });
+
+  describe('bookmark', () => {
+    describe('Create Bookmarl', () => {});
+
+    describe('Get Bookmarks', () => {});
+
+    describe('Get one bookmark', () => {});
+
+    describe('Edit bookmark', () => {});
+
+    describe('Delete Bookmark', () => {});
+  });
+
+  afterAll(() => {
+    app.close();
+  });
   // it('/ (GET)', () => {
   //   return request(app.getHttpServer())
   //     .get('/')
