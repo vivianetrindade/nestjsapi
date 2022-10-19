@@ -4,6 +4,7 @@ import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
 import { PrismamService } from '../src/prismam/prismam.service';
 import { AuthDto } from 'src/auth/dto';
+import { EditUserDto } from 'src/user/dto';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -116,13 +117,32 @@ describe('AppController (e2e)', () => {
       });
     });
 
-    describe('Edit user', () => {});
+    describe('Edit user', () => {
+      it('should edit user', () => {
+        const dto: EditUserDto = {
+          email: 'trindade2.viviane@gmail.com',
+        };
+        return request(app.getHttpServer())
+          .patch('/users')
+          .set('Authorization', `Bearer ${jwtToken}`)
+          .send(dto)
+          .expect(200);
+      });
+    });
   });
 
   describe('bookmark', () => {
-    describe('Create Bookmarl', () => {});
+    describe('Get empty Bookmarks', () => {
+      it('shoul get empty bookmark', () => {
+        return request(app.getHttpServer())
+          .get('/bookmarks')
+          .set('Authorization', `Bearer ${jwtToken}`)
+          .expect(200);
+      });
+    });
 
-    describe('Get Bookmarks', () => {});
+    describe('Create Bookmark', () => {});
+
 
     describe('Get one bookmark', () => {});
 
