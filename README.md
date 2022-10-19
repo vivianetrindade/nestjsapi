@@ -7,7 +7,7 @@
 
 # NestJS
 
-> This project is a CRUD api using the framework NestJS. It contains basic api for authentication, schema for database connection, creation of database using docker container, operations for users and bookmarks tables, and e2e tests using jest. This project can be used as a boilerplate for future Nest Js applications. This project were build with the help of this [tutorial](https://www.youtube.com/watch?v=GHTA143_b-s)
+> This project is a CRUD api using the framework NestJS. It contains basic api for authentication, schema for database connection, creation of database using docker container, operations for users and bookmarks tables, and e2e tests using jest. Also, can be used as a boilerplate for future Nest Js applications. This project were build with the help of this [tutorial](https://www.youtube.com/watch?v=GHTA143_b-s)
 
 ## TechStack
 * TypeScript
