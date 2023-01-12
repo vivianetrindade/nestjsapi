@@ -55,7 +55,7 @@ $ npm run test:e2e
 👤 **Viviane Trindade**
 
 * Github: [@vivianetrindade](https://github.com/vivianetrindade)
-* LinkedIn: [@vivianetrindade](https://linkedin.com/in/vivianetrindade)
+* LinkedIn: [@vivianetrindade](https://linkedin.com/in/viviane-trindade)
 
 ## Show your support
 
